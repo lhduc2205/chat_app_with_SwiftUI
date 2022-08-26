@@ -18,27 +18,35 @@ class AuthViewModel: ObservableObject {
     
     init() {
         self.userSession = Auth.auth().currentUser
-
+        
         if(self.userSession != nil) {
             fetchUser()
         }
     }
     
-    func login(withEmail email: String, password: String) {
+    func login(withEmail email: String, password: String, completion: @escaping() -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("DEBUG: Failed to login with error \(error.localizedDescription)")
                 return
             }
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10000) {}
             guard let user = result?.user else { return }
+            
+            completion()
+            
             self.userSession = user
             self.fetchUser()
         }
     }
     
-    func register(withEmail email: String, password: String, fullname: String, username: String) {
+    func register(
+        withEmail email: String,
+        password: String,
+        fullname: String,
+        username: String,
+        completion: @escaping() -> Void
+    ) {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("DEBUG: Failed to register with error \(error.localizedDescription)")
@@ -56,6 +64,7 @@ class AuthViewModel: ObservableObject {
                 .document(user.uid)
                 .setData(data) { _ in
                     print("DEBUG: Did upload user data..")
+                    completion()
                     self.didAuthenticateUser = true
                 }
         }

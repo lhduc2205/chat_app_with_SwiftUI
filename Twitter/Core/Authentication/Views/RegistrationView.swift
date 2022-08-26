@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct RegistrationView: View {
-    @State private var fullname = ""
-    @State private var username = ""
-    @State private var email = ""
-    @State private var password = ""
-    @State private var passwordConfirmed = ""
+    @StateObject private var viewModel = RegistrationViewModel()
     
     @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.presentationMode) var presentationMode
@@ -20,41 +16,37 @@ struct RegistrationView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                
-                NavigationLink(
-                    destination: ProfilePhotoSelectorView(),
-                    isActive: $authViewModel.didAuthenticateUser,
-                    label: { }
-                )
-                
-                AuthHeaderView(
-                    firstText: "Get started.",
-                    secondText: "Create your account",
-                    corners: [.bottomLeft])
-                
-                registrationForm
-                
-                signUpButton
-                
-                Spacer()
-                
-                signInNavigationLink
-                
-                
+            LoadingView(isLoading: $viewModel.isLoading) {
+                VStack {
+                    
+                    NavigationLink(
+                        destination: ProfilePhotoSelectorView(),
+                        isActive: $authViewModel.didAuthenticateUser,
+                        label: { }
+                    )
+                    
+                    AuthHeaderView(
+                        firstText: "Get started.",
+                        secondText: "Create your account",
+                        corners: [.bottomLeft])
+                    
+                    registrationForm
+                    
+                    signUpButton
+                    
+                    Spacer()
+                    
+                    signInNavigationLink
+                    
+                    
+                }
+                .ignoresSafeArea()
+                .navigationBarHidden(true)
             }
-            .ignoresSafeArea()
-            .navigationBarHidden(true)
         }
     }
     
-    func isAnyNullFieldExisted() -> Bool {
-        return  fullname.isEmpty ||
-                email.isEmpty ||
-                password.isEmpty ||
-                passwordConfirmed.isEmpty ||
-                username.isEmpty
-    }
+    
 }
 
 struct RegistrationView_Previews: PreviewProvider {
@@ -74,30 +66,30 @@ extension RegistrationView {
                 CustomInputField(
                     placeholderText: "Full name",
                     imageName: "person",
-                    text: $fullname)
+                    text: $viewModel.fullname)
                 
                 CustomInputField(
                     placeholderText: "Username",
                     imageName: "pencil.and.outline",
-                    text: $username)
+                    text: $viewModel.username)
             }
             
             CustomInputField(
                 placeholderText: "Email",
                 imageName: "envelope",
-                text: $email)
+                text: $viewModel.email)
             
             CustomInputField(
                 placeholderText: "Password",
                 imageName: "lock",
                 isSecure: true,
-                text: $password)
+                text: $viewModel.password)
             
             CustomInputField(
                 placeholderText: "Conform Password",
                 imageName: "lock",
                 isSecure: true,
-                text: $passwordConfirmed)
+                text: $viewModel.passwordConfirmed)
         }
         .padding(.horizontal, 30)
         .padding(.bottom, 50)
@@ -106,13 +98,19 @@ extension RegistrationView {
     var signUpButton: some View {
         LargeButton(
             label: "Sign Up",
-            isDisabled: isAnyNullFieldExisted(),
+            isDisabled: viewModel.isAnyNullFieldExisted(),
             onPressed: {
+                viewModel.isLoading.toggle()
                 
-                authViewModel.register(withEmail: email,
-                                       password: password,
-                                       fullname: fullname,
-                                       username: username)
+                authViewModel.register(
+                    withEmail: viewModel.email,
+                    password: viewModel.password,
+                    fullname: viewModel.fullname,
+                    username: viewModel.username
+                ) {
+                    viewModel.isLoading.toggle()
+                }
+                
             }
         )
         .shadow(color: .gray.opacity(0.3), radius: 10, y: 10)

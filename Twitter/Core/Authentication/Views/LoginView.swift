@@ -86,8 +86,9 @@ extension LoginView {
     var signInButton: some View {
         LargeButton(label: "Sign in", isDisabled: email.isEmpty || password.isEmpty) {
             viewModel.isLoading.toggle()
-            authViewModel.login(withEmail: email, password: password)
-            viewModel.isLoading.toggle()
+            authViewModel.login(withEmail: email, password: password) {
+                viewModel.isLoading.toggle()
+            }
         }
         .shadow(color: .gray.opacity(0.3), radius: 10, y: 10)
         .padding(.horizontal, 20)

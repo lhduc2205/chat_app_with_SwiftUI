@@ -17,7 +17,9 @@ struct LoadingView<Content: View>: View {
             
             if(isLoading) {
                 grayBackground
-                loadingContent
+                withAnimation(.easeInOut) {
+                    loadingContent
+                }
             }
         }
     }
@@ -46,7 +48,7 @@ extension LoadingView {
         .frame(width: 350, height: 370)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
-        .shadow(color: Color(.systemGray3), radius: 20, x: 0, y: 0)
+        .shadow(color: Color(.systemGray2), radius: 10, x: 0, y: 0)
         .padding(.horizontal)
     }
 }

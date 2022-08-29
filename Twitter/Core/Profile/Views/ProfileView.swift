@@ -37,14 +37,13 @@ struct ProfileView: View {
             }
             
             tweetFilterBar
-            ScrollView {
-                
-                ForEach(0...9, id: \.self) { _ in
-                    LazyVStack {
-                        TweetRowView().padding()
-                    }
-                }
-            }
+//            ScrollView {
+//                ForEach(0...9, id: \.self) { _ in
+//                    LazyVStack {
+//                        TweetRowView(tweet: Tweet(uid: userInfo.id!, caption: "")).padding()
+//                    }
+//                }
+//            }
             
             Spacer()
         }

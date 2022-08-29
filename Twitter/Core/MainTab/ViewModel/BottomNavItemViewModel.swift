@@ -36,7 +36,6 @@ enum ButtomNavItemViewModel: Int, CaseIterable {
     }
     
     func getView(user: User) -> AnyView {
-        
         switch self {
             case .home:         return AnyView(FeedView())
             case .explore:      return AnyView(ExploreView())

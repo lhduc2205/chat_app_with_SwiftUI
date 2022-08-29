@@ -6,70 +6,137 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct TweetRowView: View {
+    var tweet: Tweet
+    
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Circle()
-                    .frame(width: 56, height: 56)
-                    .foregroundColor(.blue)
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text("Le Huynh Duc")
-                            .font(.subheadline.bold())
-                        Text("@lhduc")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Text("online")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    Text("Hellooooo")
-                        .font(.subheadline)
-                        .multilineTextAlignment(.leading)
-                }
+            
+            if let user = tweet.user {
+                TweetInfo(user: user, timePostAgo: tweet.getTimePostAgo())
             }
             
-            HStack {
-                Button {
-                    
-                } label: {
-                    Image(systemName: "bubble.left")
-                }
-                Spacer()
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "arrow.2.squarepath")
-                }
-                
-                Spacer()
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "heart")
-                }
-                Spacer()
-                
-                Button {
-                    
-                } label: {
-                    Image(systemName: "bookmark")
-                }
+            TweetCaption(caption: tweet.caption)
+            
+            if tweet.imageUrl != "" {
+                ImageAttach(image: tweet.imageUrl)
             }
-            .padding()
-            .foregroundColor(.gray)
+            
+            
+            Divider().padding(.horizontal).padding(.top, 20)
+            
+            ActionButton()
             
             Divider()
+                .frame(height: 8)
+                .overlay(Color(.systemGray6))
         }
     }
+    
+    
 }
 
-struct TweetRowView_Previews: PreviewProvider {
-    static var previews: some View {
-        TweetRowView()
+extension TweetRowView {
+    
+    private struct TweetInfo: View {
+        let user: User
+        let timePostAgo: String
+        
+        var body: some View {
+            HStack {
+                KFImage(URL(string: user.profileImageUrl))
+                    .resizable()
+                    .scaledToFill()
+                    .clipShape(Circle())
+                    .frame(width: 45, height: 45)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(user.fullname)
+                        .font(.subheadline.bold())
+                    Text(timePostAgo)
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 10)
+        }
     }
+    
+    private struct TweetCaption: View {
+        let caption: String
+        
+        var body: some View {
+            Text(caption)
+                .font(.subheadline)
+                .multilineTextAlignment(.leading)
+                .padding(.horizontal)
+        }
+    }
+    
+    private struct ImageAttach: View {
+        let image: String
+        
+        var body: some View {
+            KFImage(URL(string: image))
+                .resizable()
+                .scaledToFill()
+                .frame(height: 200)
+                .cornerRadius(5)
+                .padding(.horizontal)
+        }
+    }
+    
+    private struct ActionButton: View {
+        var body: some View {
+            HStack {
+                CustomButton(title: "Favorite", imageSystem: "heart") {
+                    
+                }
+                
+                Spacer()
+                
+                CustomButton(title: "Comment", imageSystem: "bubble.left") {
+                    
+                }
+                
+                Spacer()
+                
+                CustomButton(title: "Share", imageSystem: "arrowshape.turn.up.right") {
+                    
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 5)
+            .foregroundColor(.gray)
+        }
+    }
+    
+    
+    private struct CustomButton: View {
+        let title: String
+        let imageSystem: String
+        let onPressed: () -> Void
+        
+        var body: some View {
+            Button {
+                onPressed()
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: imageSystem)
+                    Text(title).font(.caption)
+                    
+                }
+            }
+        }
+    }
+    
+    
 }
+
+//struct TweetRowView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TweetRowView()
+//    }
+//}

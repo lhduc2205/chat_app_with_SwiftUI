@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct LoadingView<Content: View>: View {
+    var title: String
+    
     @Binding var isLoading: Bool
     @ViewBuilder var contentView: Content
     
@@ -39,7 +41,7 @@ extension LoadingView {
                 .scaledToFit()
                 .frame(height: 200)
                 .padding()
-            Text("Please wait...")
+            Text(title)
                 .font(.system(size: 22))
             
             ProgressView()
@@ -55,7 +57,7 @@ extension LoadingView {
 
 struct LoadingView_Previews: PreviewProvider {
     static var previews: some View {
-        LoadingView(isLoading: .constant(true)) {
+        LoadingView(title: "Please wait...", isLoading: .constant(true)) {
             LoginView()
         }
     }

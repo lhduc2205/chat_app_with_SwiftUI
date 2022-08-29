@@ -20,8 +20,6 @@ class ExploreViewModel: ObservableObject {
     func fetchUsers() {
         userService.fetchUsers { users in
             self.users = users
-            
-            print("DEBUG: users \(users)")
         }
     }
     

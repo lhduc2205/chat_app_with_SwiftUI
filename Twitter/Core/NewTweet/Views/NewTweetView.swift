@@ -11,7 +11,8 @@ import Kingfisher
 struct NewTweetView: View {
     @State var imageAttach: UIImage?
     
-    @ObservedObject private var viewModel = NewTweetviewModel()
+    @StateObject var viewModel = NewTweetviewModel()
+    @ObservedObject var feedViewModel: FeedViewModel
     
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var authViewModel: AuthViewModel
@@ -23,6 +24,9 @@ struct NewTweetView: View {
             tweet
             tweetAttacher
         }
+        .showLoadingDialog(with: "Uploading...", isLoading: $viewModel.isTweetUploading)
+        
+        
     }
 }
 
@@ -41,8 +45,14 @@ extension NewTweetView {
                 }
                 Spacer()
                 Button {
-                    viewModel.uploadTweet(withCaption: viewModel.caption,
-                                          imageAtach: imageAttach)
+                    viewModel.postTweet(
+                        withCaption: viewModel.caption,
+                        imageAtach: imageAttach
+                    ) {
+                        feedViewModel.fetchTweets {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                    }
                 } label: {
                     Text("Post")
                         .padding(.horizontal, 20)
@@ -175,8 +185,8 @@ extension NewTweetView {
 
 
 
-struct NewTweetView_Previews: PreviewProvider {
-    static var previews: some View {
-        NewTweetView()
-    }
-}
+//struct NewTweetView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        NewTweetView()
+//    }
+//}

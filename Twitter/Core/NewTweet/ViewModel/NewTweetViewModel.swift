@@ -11,28 +11,61 @@ import Firebase
 class NewTweetviewModel: ObservableObject {
     @Published var caption             = ""
     @Published var isBottomSheetShowed = false
+    @Published var isTweetUploading    = false
+    
+//    @Binding var feedViewModel: FeedViewModel
     
     var actionType:  ActionType   =  .image
     let service:     TweetService =  TweetService()
     
     enum ActionType: String { case image, tag, emoji, location, more }
     
-    func uploadTweet(withCaption caption: String, imageAtach: UIImage?) {
-        // Upload image
-        var imageUrl  = ""
-        if let imageAtach = imageAtach {
-            ImageUploader.uploadImage(image: imageAtach) { _imageUrl in
-                print("DEBUG: Did upload image attach..")
-                imageUrl = _imageUrl
-            }
+    func fetchTweets(completion: @escaping([Tweet]) -> Void) {
+        service.fetchTweets { _tweet in
+            completion(_tweet)
         }
-        
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        let tweet     = Tweet(uid: uid, caption: caption, imageUrl: imageUrl)
-        
-        service.uploadTweet(tweet)
     }
     
+    func postTweet(withCaption caption: String, imageAtach: UIImage?, completion: @escaping() -> Void) {
+        self.isTweetUploading.toggle()
+        
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        if let imageAtach = imageAtach {
+            uploadTweetWithImage(imageAtach, uid: uid) {
+                self.isTweetUploading.toggle()
+                completion()
+            }
+            return
+        }
+        
+        uploadTweet(with: Tweet(uid: uid, caption: self.caption)) {
+            self.isTweetUploading.toggle()
+            completion()
+        }
+        
+    }
+    
+    func uploadTweet(with tweet: Tweet, completion: @escaping() -> Void) {
+        service.uploadTweet(tweet) { success in
+            print("DEBUG: Did upload tweet...")
+            if success {
+                self.isTweetUploading.toggle()
+                completion()
+            } else {
+                
+            }
+        }
+    }
+    
+    func uploadTweetWithImage(_ imageAtach: UIImage, uid: String, completion: @escaping() -> Void) {
+        ImageUploader.uploadImage(image: imageAtach) { _imageUrl in
+            print("DEBUG: Did upload image attach...")
+            self.uploadTweet(with: Tweet(uid: uid, caption: self.caption, imageUrl: _imageUrl)) {
+                completion()
+            }
+        }
+    }
     
 }
 

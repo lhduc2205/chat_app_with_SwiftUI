@@ -10,13 +10,15 @@ import SwiftUI
 struct FeedView: View {
     @State private var isShowNewTweet = false
     
+    @StateObject var viewModel = FeedViewModel()
+    
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
                 ScrollView {
                     LazyVStack {
-                        ForEach(0...20, id: \.self) { _ in
-                            TweetRowView().padding()
+                        ForEach(viewModel.tweets) { tweet in
+                            TweetRowView(tweet: tweet)
                         }
                     }
                 }
@@ -51,7 +53,7 @@ extension FeedView {
         .padding()
         .shadow(color: .gray.opacity(0.8), radius: 10, x: 3, y: 2)
         .fullScreenCover(isPresented: $isShowNewTweet) {
-            NewTweetView()
+            NewTweetView(feedViewModel: viewModel)
         }
         
     }

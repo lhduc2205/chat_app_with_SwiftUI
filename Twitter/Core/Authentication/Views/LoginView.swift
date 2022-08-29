@@ -15,26 +15,25 @@ struct LoginView: View {
     
     var body: some View {
         NavigationView {
-            LoadingView(isLoading: $viewModel.isLoading) {
-                VStack {
-                    AuthHeaderView(firstText: "Hello.",
-                                   secondText: "Welcome back",
-                                   corners: [.bottomRight])
-                    
-                    emailAndPasswordTextField
-                    
-                    forgotPasswordLink
-                    
-                    signInButton
-                    
-                    Spacer()
-                    
-                    signUpNavigationLink
-                    
-                }
-                .ignoresSafeArea()
-                .navigationBarHidden(true)
+            VStack {
+                AuthHeaderView(firstText: "Hello.",
+                               secondText: "Welcome back",
+                               corners: [.bottomRight])
+                
+                emailAndPasswordTextField
+                
+                forgotPasswordLink
+                
+                signInButton
+                
+                Spacer()
+                
+                signUpNavigationLink
+                
             }
+            .showLoadingDialog(with: "Authenticating...", isLoading: $viewModel.isLoading)
+            .ignoresSafeArea()
+            .navigationBarHidden(true)
         }
     }
     

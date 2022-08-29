@@ -16,33 +16,32 @@ struct RegistrationView: View {
     
     var body: some View {
         NavigationView {
-            LoadingView(isLoading: $viewModel.isLoading) {
-                VStack {
-                    
-                    NavigationLink(
-                        destination: ProfilePhotoSelectorView(),
-                        isActive: $authViewModel.didAuthenticateUser,
-                        label: { }
-                    )
-                    
-                    AuthHeaderView(
-                        firstText: "Get started.",
-                        secondText: "Create your account",
-                        corners: [.bottomLeft])
-                    
-                    registrationForm
-                    
-                    signUpButton
-                    
-                    Spacer()
-                    
-                    signInNavigationLink
-                    
-                    
-                }
-                .ignoresSafeArea()
-                .navigationBarHidden(true)
+            VStack {
+                
+                NavigationLink(
+                    destination: ProfilePhotoSelectorView(),
+                    isActive: $authViewModel.didAuthenticateUser,
+                    label: { }
+                )
+                
+                AuthHeaderView(
+                    firstText: "Get started.",
+                    secondText: "Create your account",
+                    corners: [.bottomLeft])
+                
+                registrationForm
+                
+                signUpButton
+                
+                Spacer()
+                
+                signInNavigationLink
+                
+                
             }
+            .showLoadingDialog(with: "Registering...", isLoading: $viewModel.isLoading)
+            .ignoresSafeArea()
+            .navigationBarHidden(true)
         }
     }
     

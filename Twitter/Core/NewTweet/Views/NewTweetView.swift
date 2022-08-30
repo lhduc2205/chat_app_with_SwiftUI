@@ -48,7 +48,9 @@ extension NewTweetView {
                         imageAtach: imageAttach
                     ) {
                         feedViewModel.fetchTweets {
-                            presentationMode.wrappedValue.dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                presentationMode.wrappedValue.dismiss()
+                            }
                         }
                     }
                 } label: {

@@ -19,9 +19,7 @@ struct LoginView: View {
                                corners: [.bottomRight])
                 
                 emailAndPasswordTextField
-                
                 forgotPasswordLink
-                
                 signInButton
                 
                 Spacer()
@@ -29,8 +27,15 @@ struct LoginView: View {
                 signUpNavigationLink
                 
             }
-            .showWaitingDialog(with: "Authenticating...", isLoading: $viewModel.isLoading)
-            .showAlertDialog(title: "Authentication fail", text: "Email or password is incorrect!", confirmText: "Try again", isShow: $viewModel.isShowAlertDialog)
+            .showWaitingDialog(
+                with: "Authenticating...", isLoading: $viewModel.isLoading
+            )
+            .showAlertDialog(
+                title: viewModel.alertTitle,
+                text: viewModel.alertContent,
+                confirmText: viewModel.alertConfirmText,
+                isShow: $viewModel.isShowAlertDialog
+            )
             .ignoresSafeArea()
             .navigationBarHidden(true)
         }

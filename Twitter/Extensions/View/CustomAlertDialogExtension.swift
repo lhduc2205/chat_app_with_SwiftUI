@@ -40,20 +40,19 @@ struct CustomAlertDialog: ViewModifier {
                     HStack {
                         Spacer()
                         Button {
-                            withAnimation(.easeInOut) {
-                                isShow.toggle()
-                            }
+                            isShow.toggle()
                         } label: {
                             Text("Try again")
-                                .padding(.all, 12)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 12)
                                 .background(Color(.systemBlue))
                                 .foregroundColor(.white)
                                 .cornerRadius(10)
                         }
                     }
                 }
-                .padding(.all, 20)
-                .frame(width: 280)
+                .padding(.all, 17)
+                .frame(width: UIScreen.screenWidth - 40)
                 .background(.white)
                 .cornerRadius(20, corners: .allCorners)
                 .shadow(color: Color(.systemGray2), radius: 10, x: 0, y: 0)

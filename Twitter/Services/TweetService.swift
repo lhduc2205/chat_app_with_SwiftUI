@@ -55,8 +55,8 @@ struct TweetService {
         let tweetDoc = tweetRef.document(tweetId)
         let usersLikeRef = tweetDoc.collection(FirebaseConstants.USERS_LIKE_COLECTION)
         
-        tweetDoc.updateData(["likes": tweet.likes + 1]) { _ in
-            usersLikeRef.document(uid).setData(["didLike": true]) { _ in
+        tweetDoc.updateData(["likes": tweet.likes]) { _ in
+            usersLikeRef.document(uid).setData([:]) { _ in
                 print("DEBUG: Did like tweet and now we should update UI")
                 completion(true)
             }
@@ -70,11 +70,11 @@ struct TweetService {
         let tweetDoc = tweetRef.document(tweetId)
         let usersLikeRef = tweetDoc.collection(FirebaseConstants.USERS_LIKE_COLECTION)
         
-        tweetDoc.updateData(["likes": tweet.likes - 1]) { _ in
-            usersLikeRef.document(uid).setData(["didLike": false]) { _ in
-                print("DEBUG: Did unlike tweet and now we should update UI")
-                completion(true)
-            }
+        tweetDoc.updateData(["likes": tweet.likes]) { _ in
+            usersLikeRef.document(uid).delete()
+            
+            print("DEBUG: Did unlike tweet and now we should update UI")
+            completion(true)
         }
     }
     

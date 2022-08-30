@@ -28,15 +28,13 @@ class TweetRowViewModel: ObservableObject {
     private func likeTweet() {
         self.tweet.likes += 1
         self.tweet.didLike = true
-        tweetService.likeTweet(tweet) { _ in
-        }
+        tweetService.likeTweet(tweet) { _ in }
     }
     
     private func unLikeTweet() {
         self.tweet.likes -= 1
         self.tweet.didLike = false
-        tweetService.unLikeTweet(tweet) { _ in
-        }
+        tweetService.unLikeTweet(tweet) { _ in }
     }
     
     private func checkIfUserLikedTweet() {

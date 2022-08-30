@@ -24,7 +24,7 @@ struct NewTweetView: View {
             tweet
             tweetAttacher
         }
-        .showLoadingDialog(with: "Uploading...", isLoading: $viewModel.isTweetUploading)
+        .showWaitingDialog(with: "Uploading...", isLoading: $viewModel.isTweetUploading)
     }
 }
 
@@ -139,7 +139,7 @@ extension NewTweetView {
                 .padding(.vertical)
             
             if let imageAttach = imageAttach {
-                ZStack(alignment: .topLeading) {
+                ZStack(alignment: .topTrailing) {
                     GeometryReader { proxy in
                         Image(uiImage: imageAttach)
                             .resizable()
@@ -153,7 +153,7 @@ extension NewTweetView {
                             .frame(width: 30, height: 30)
                             .foregroundColor(.white)
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 10)
                 }
             }
             Spacer()

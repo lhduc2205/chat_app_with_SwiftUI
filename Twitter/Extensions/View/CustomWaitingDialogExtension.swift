@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CustomDialog: ViewModifier {
+struct CustomWaitingDialog: ViewModifier {
     var title: String
     
     @Binding var isLoading: Bool
@@ -43,8 +43,8 @@ struct CustomDialog: ViewModifier {
 }
 
 extension View {
-    func showLoadingDialog(with title: String, isLoading: Binding<Bool>) -> some View {
-        modifier(CustomDialog(title: title, isLoading: isLoading))
+    func showWaitingDialog(with title: String, isLoading: Binding<Bool>) -> some View {
+        modifier(CustomWaitingDialog(title: title, isLoading: isLoading))
     }
 }
 
@@ -52,6 +52,6 @@ extension View {
 struct CustomDialog_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()
-            .showLoadingDialog(with: "Loading...", isLoading: .constant(true))
+            .showWaitingDialog(with: "Loading...", isLoading: .constant(true))
     }
 }

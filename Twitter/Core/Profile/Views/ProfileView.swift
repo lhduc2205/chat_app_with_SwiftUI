@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Firebase
-import Kingfisher
 
 struct ProfileView: View {
     private let isMyProfile: Bool
@@ -85,12 +84,7 @@ extension ProfileView {
             
             HStack {
                 Spacer()
-                KFImage(URL(string: viewModel.user.profileImageUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .clipShape(Circle())
-                    .frame(width: 100, height: 100)
-                    .offset(y: 100 / 2)
+                CircleAvatar(avatarUrl: viewModel.user.profileImageUrl, radius: 100).offset(y: 100 / 2)
                 Spacer()
             }
         }
@@ -196,7 +190,7 @@ extension ProfileView {
             
             ForEach(viewModel.tweets) { tweet in
                 LazyVStack {
-                    TweetRowView(tweet: tweet)
+                    TweetRowView(tweet: tweet) 
                 }
             }
         }

@@ -39,7 +39,7 @@ struct RegistrationView: View {
                 
                 
             }
-            .showLoadingDialog(with: "Registering...", isLoading: $viewModel.isLoading)
+            .showWaitingDialog(with: "Registering...", isLoading: $viewModel.isLoading)
             .ignoresSafeArea()
             .navigationBarHidden(true)
         }

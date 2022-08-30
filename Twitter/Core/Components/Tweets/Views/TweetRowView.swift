@@ -9,26 +9,29 @@ import SwiftUI
 import Kingfisher
 
 struct TweetRowView: View {
-    var tweet: Tweet
+    @ObservedObject var viewModel: TweetRowViewModel
     var backgroundColor: Color?
+    
+    init(tweet: Tweet) {
+        self.viewModel = TweetRowViewModel(tweet: tweet)
+    }
     
     var body: some View {
         VStack(alignment: .leading) {
             
-            if let user = tweet.user {
-                TweetInfo(user: user, timePostAgo: tweet.getTimePostAgo())
+            if let user = viewModel.tweet.user {
+                TweetInfo(user: user, timePostAgo: viewModel.tweet.getTimePostAgo())
             }
             
-            TweetCaption(caption: tweet.caption)
+            TweetCaption(caption: viewModel.tweet.caption)
             
-            if tweet.imageUrl != "" {
-                ImageAttach(image: tweet.imageUrl)
+            if viewModel.tweet.imageUrl != "" {
+                ImageAttach(image: viewModel.tweet.imageUrl)
             }
-            
             
             Divider().padding(.horizontal).padding(.top, 20)
             
-            ActionButton()
+            actionButton
         }
         .padding(.vertical)
         .background(backgroundColor ?? .white)
@@ -45,7 +48,7 @@ extension TweetRowView {
         
         var body: some View {
             HStack {
-                KFImage(URL(string: user.profileImageUrl))
+                KFImage(URL(string:user.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .clipShape(Circle())
@@ -84,35 +87,39 @@ extension TweetRowView {
         }
     }
     
-    private struct ActionButton: View {
-        var body: some View {
-            HStack {
-                CustomButton(title: "Favorite", imageSystem: "heart") {
-                    
+    var actionButton: some View {
+        HStack {
+            CustomButton(
+                title: "Favorite",
+                reactions: viewModel.tweet.likes,
+                imageSystem: viewModel.tweet.didLike ?? false ? "heart.fill" : "heart",
+                color: viewModel.tweet.didLike ?? false ? Color(.systemRed) : .gray,
+                onPressed: {
+                    viewModel.handleLikeTweet()
                 }
-                
-                Spacer()
-                
-                CustomButton(title: "Comment", imageSystem: "bubble.left") {
-                    
-                }
-                
-                Spacer()
-                
-                CustomButton(title: "Share", imageSystem: "arrowshape.turn.up.right") {
-                    
-                }
+            )
+            
+            Spacer()
+            
+            CustomButton(title: "Comment", reactions: 0, imageSystem: "bubble.left") {
             }
-            .padding(.horizontal)
-            .padding(.vertical, 5)
-            .foregroundColor(.gray)
+            
+            Spacer()
+            
+            CustomButton(title: "Share", reactions: 0, imageSystem: "arrowshape.turn.up.right") {
+            }
         }
+        .padding(.horizontal)
+        .padding(.vertical, 5)
+        .foregroundColor(.gray)
     }
     
     
     private struct CustomButton: View {
         let title: String
+        let reactions: Int
         let imageSystem: String
+        var color: Color = .gray
         let onPressed: () -> Void
         
         var body: some View {
@@ -121,9 +128,14 @@ extension TweetRowView {
             } label: {
                 HStack(spacing: 5) {
                     Image(systemName: imageSystem)
-                    Text(title).font(.caption)
+                    if reactions != 0 {
+                        Text("\(reactions) \(title)").font(.caption)
+                    } else {
+                        Text(title).font(.caption)
+                    }
                     
                 }
+                .foregroundColor(color)
             }
         }
     }

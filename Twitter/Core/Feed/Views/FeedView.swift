@@ -6,31 +6,35 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct FeedView: View {
     @State private var isShowNewTweet = false
     
     @StateObject var viewModel = FeedViewModel()
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         NavigationView {
-            ZStack(alignment: .bottomTrailing) {
-                Color(.systemGray6)
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack {
-                        ForEach(viewModel.tweets) { tweet in
-                            TweetRowView(tweet: tweet)
-                        }
-                    }
+            if viewModel.tweets.isEmpty {
+                VStack {
+                    newTweetButton
+                    noTweetNotification
                 }
-                .refreshable {
-                    viewModel.fetchTweets()
-                }
+                .navigationTitle("Home")
+                .navigationBarTitleDisplayMode(.inline)
                 
-                newTweetButton
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    newTweetButton
+                    Divider().frame(height: 8).overlay(Color(.systemGray6))
+                    tweets
+                }
+                .navigationTitle("Home")
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle("Home")
-            .navigationBarTitleDisplayMode(.inline)
+            
+            
         }
     }
 }
@@ -42,20 +46,56 @@ struct FeedView_Previews: PreviewProvider {
 }
 
 extension FeedView {
+    
+    var tweets: some View {
+        ZStack {
+            Color(.systemGray6)
+            LazyVStack {
+                ForEach(viewModel.tweets) { tweet in
+                    TweetRowView(tweet: tweet)
+                }
+            }
+        }
+    }
+    
+    var noTweetNotification: some View {
+        VStack(alignment: .center, spacing: 5) {
+            HStack { Spacer() }
+            Spacer()
+            Image("setting")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 90, height: 90)
+            Text("No tweet yet")
+                .font(.headline)
+                .foregroundColor(.gray)
+            
+            Spacer()
+        }
+        .background(Color(.systemGray6))
+    }
+    
     var newTweetButton: some View {
         Button {
             isShowNewTweet = true
         } label: {
-            Image(systemName: "pencil")
-                .resizable()
-                .frame(width: 28, height: 28)
-                .padding()
+            HStack(spacing: 10) {
+                if let avatar = authViewModel.currentUser?.profileImageUrl {
+                    CircleAvatar(avatarUrl: avatar, radius: 30)
+                }
+                Text("What do you think about?")
+                    .foregroundColor(Color(.systemGray))
+                
+                Spacer()
+                Image(systemName: "pencil")
+                    .resizable()
+                    .frame(width: 15, height: 15)
+            }
+            .padding(.top)
+            .padding(.horizontal)
         }
-        .background(Color(.systemBlue))
-        .foregroundColor(.white)
-        .clipShape(Circle())
-        .padding()
-        .shadow(color: .gray.opacity(0.8), radius: 10, x: 3, y: 2)
+        .background(Color(.clear))
+        .padding(.bottom)
         .fullScreenCover(isPresented: $isShowNewTweet) {
             NewTweetView(feedViewModel: viewModel)
         }

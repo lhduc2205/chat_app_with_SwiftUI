@@ -35,4 +35,8 @@ class FeedViewModel: ObservableObject {
         }
     }
     
+//    func likePost() {
+//        tweetService.likeTweet()
+//    }
+    
 }

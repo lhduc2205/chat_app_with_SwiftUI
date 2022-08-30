@@ -10,4 +10,7 @@ import Foundation
 struct FirebaseConstants {
     static let USER_COLLECTION = "users"
     static let TWEET_COLLECTION = "tweets"
+    static let USERS_LIKE_COLECTION = "users-like"
+    
 }
+

@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State private var email    = ""
-    @State private var password = ""
     @StateObject private var viewModel = LoginViewModel()
     @EnvironmentObject var authViewModel: AuthViewModel
     
@@ -31,7 +29,8 @@ struct LoginView: View {
                 signUpNavigationLink
                 
             }
-            .showLoadingDialog(with: "Authenticating...", isLoading: $viewModel.isLoading)
+            .showWaitingDialog(with: "Authenticating...", isLoading: $viewModel.isLoading)
+            .showAlertDialog(title: "Authentication fail", text: "Email or password is incorrect!", confirmText: "Try again", isShow: $viewModel.isShowAlertDialog)
             .ignoresSafeArea()
             .navigationBarHidden(true)
         }
@@ -53,13 +52,13 @@ extension LoginView {
             CustomInputField(
                 placeholderText: "Email",
                 imageName: "envelope",
-                text: $email)
+                text: $viewModel.email)
             
             CustomInputField(
                 placeholderText: "Password",
                 imageName: "lock",
                 isSecure: true,
-                text: $password)
+                text: $viewModel.password)
         }
         .padding(.horizontal, 30)
         .padding(.bottom, 20)
@@ -83,10 +82,13 @@ extension LoginView {
     }
     
     var signInButton: some View {
-        LargeButton(label: "Sign in", isDisabled: email.isEmpty || password.isEmpty) {
+        LargeButton(label: "Sign in", isDisabled: viewModel.email.isEmpty || viewModel.password.isEmpty) {
             viewModel.isLoading.toggle()
-            authViewModel.login(withEmail: email, password: password) {
+            authViewModel.login(withEmail: viewModel.email, password: viewModel.password) { success in
                 viewModel.isLoading.toggle()
+                if !success {
+                    viewModel.isShowAlertDialog.toggle()
+                }
             }
         }
         .shadow(color: .gray.opacity(0.3), radius: 10, y: 10)

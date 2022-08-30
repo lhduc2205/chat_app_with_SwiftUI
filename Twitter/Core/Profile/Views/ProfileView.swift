@@ -36,7 +36,11 @@ struct ProfileView: View {
             
             tweetFilterBar
             
-            tweets
+            if !viewModel.tweets.isEmpty{
+                tweets
+            } else {
+                noTweetNotification
+            }
             
             Spacer()
         }
@@ -197,6 +201,23 @@ extension ProfileView {
             }
         }
         .offset(y: -20)
+        .background(Color(.systemGray6))
+    }
+    
+    var noTweetNotification: some View {
+        VStack(alignment: .center, spacing: 5) {
+            HStack { Spacer() }
+            Spacer()
+            Image("setting")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 90, height: 90)
+            Text("No tweet yet")
+                .font(.headline)
+                .foregroundColor(.gray)
+            
+            Spacer()
+        }
         .background(Color(.systemGray6))
     }
     

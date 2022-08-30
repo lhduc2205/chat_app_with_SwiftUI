@@ -10,6 +10,7 @@ import Kingfisher
 
 struct TweetRowView: View {
     var tweet: Tweet
+    var backgroundColor: Color?
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -28,11 +29,9 @@ struct TweetRowView: View {
             Divider().padding(.horizontal).padding(.top, 20)
             
             ActionButton()
-            
-            Divider()
-                .frame(height: 8)
-                .overlay(Color(.systemGray6))
         }
+        .padding(.vertical)
+        .background(backgroundColor ?? .white)
     }
     
     
@@ -82,9 +81,6 @@ extension TweetRowView {
             KFImage(URL(string: image))
                 .resizable()
                 .scaledToFill()
-                .frame(height: 200)
-                .cornerRadius(5)
-                .padding(.horizontal)
         }
     }
     

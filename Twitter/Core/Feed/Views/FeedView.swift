@@ -15,12 +15,16 @@ struct FeedView: View {
     var body: some View {
         NavigationView {
             ZStack(alignment: .bottomTrailing) {
-                ScrollView {
+                Color(.systemGray6)
+                ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack {
                         ForEach(viewModel.tweets) { tweet in
                             TweetRowView(tweet: tweet)
                         }
                     }
+                }
+                .refreshable {
+                    viewModel.fetchTweets()
                 }
                 
                 newTweetButton

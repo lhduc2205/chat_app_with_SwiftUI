@@ -23,12 +23,19 @@ struct MainTabView: View {
                         self.selectedIndex = item.rawValue
                     }
                     .tabItem {
-                        Image(systemName: item.imageName)
-                            .padding(.top)
-                        Text(item.title)
+                        VStack {
+                            Image(systemName: item.imageName)
+                                .padding(.top)
+                            Text(item.title)
+                            ZStack {
+                                Divider()
+                                    .frame(height: 2)
+                                    .overlay(Color(.systemBlue))
+                            }
+                        }
                     }
                     .tag(item.rawValue)
-
+                    
                 }
             }
         }

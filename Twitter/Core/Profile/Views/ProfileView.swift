@@ -10,42 +10,38 @@ import Firebase
 import Kingfisher
 
 struct ProfileView: View {
-    @State private var isShowSettingBottomSheet = false
-    @State private var selectedFilter: TweetFilterViewModel = .tweets
+    private let isMyProfile: Bool
     
+    @State private var selectedFilter: TweetFilterViewModel = .tweets
+    @ObservedObject private var viewModel: ProfileViewModel
     @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.presentationMode) var mode
     @Namespace var animation
     
-    private let isMyProfile: Bool
-    private let userInfo: User
-    
     init(isMyProfile: Bool = false, user: User) {
+        self.viewModel = ProfileViewModel(user: user)
         self.isMyProfile = isMyProfile
-        self.userInfo = user
-        
     }
     
     var body: some View {
         VStack(alignment: .leading) {
-            headerView
-            
-            userInfoDetails
-            
-            if(isMyProfile) {
-                editButton
+            if !viewModel.isHideInfo {
+                headerView
+                userInfoDetails
+                
+                if isMyProfile {
+                    editButton
+                }
             }
             
             tweetFilterBar
-//            ScrollView {
-//                ForEach(0...9, id: \.self) { _ in
-//                    LazyVStack {
-//                        TweetRowView(tweet: Tweet(uid: userInfo.id!, caption: "")).padding()
-//                    }
-//                }
-//            }
+            
+            tweets
             
             Spacer()
+        }
+        .onAppear() {
+            self.viewModel.fetchUserTweets()
         }
         
     }
@@ -85,7 +81,7 @@ extension ProfileView {
             
             HStack {
                 Spacer()
-                KFImage(URL(string: userInfo.profileImageUrl))
+                KFImage(URL(string: viewModel.user.profileImageUrl))
                     .resizable()
                     .scaledToFill()
                     .clipShape(Circle())
@@ -114,7 +110,7 @@ extension ProfileView {
                 .cornerRadius(10)
             }
             Button {
-                isShowSettingBottomSheet.toggle()
+                viewModel.isShowSettingBottomSheet.toggle()
             } label: {
                 Image(systemName: "ellipsis")
                     .frame(width: 50, height: 50)
@@ -122,7 +118,7 @@ extension ProfileView {
                     .foregroundColor(.black)
                     .cornerRadius(10)
             }
-            .sheet(isPresented: $isShowSettingBottomSheet) {
+            .sheet(isPresented: $viewModel.isShowSettingBottomSheet) {
                 Button {
                     authViewModel.signOut()
                 } label: {
@@ -141,30 +137,12 @@ extension ProfileView {
             Spacer()
             VStack(spacing: 5) {
                 
-                Text(userInfo.fullname)
+                Text(viewModel.user.fullname)
                     .font(.title2).bold()
                 
-                Text("@\(userInfo.username)")
+                Text("@\(viewModel.user.username)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                
-                Text("\"My favorite sport is basketball\"")
-                    .padding(.bottom, 10)
-                
-                HStack(spacing: 20) {
-                    HStack {
-                        Text("200") .font(.headline)
-                        Text("Following")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    HStack {
-                        Text("20M").font(.headline)
-                        Text("Followers")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                }
             }
             Spacer()
         }
@@ -191,6 +169,7 @@ extension ProfileView {
                             .frame(height: 3)
                     }
                 }
+                .padding(.horizontal)
                 .onTapGesture {
                     withAnimation(.easeInOut) {
                         self.selectedFilter = item
@@ -198,8 +177,27 @@ extension ProfileView {
                 }
             }
         }
-        .padding(.vertical)
-        .overlay(Divider().offset(x: 0, y: 16))
+        .padding(.top, 20)
+    }
+    
+    var tweets: some View {
+        ScrollView {
+            GeometryReader { reader -> AnyView in
+                let yAxis = reader.frame(in: .global).midY
+
+                viewModel.handleScrollToHideInfo(with: yAxis)
+
+                return AnyView(Text("").frame(width: 0, height: 0))
+            }
+            
+            ForEach(viewModel.tweets) { tweet in
+                LazyVStack {
+                    TweetRowView(tweet: tweet)
+                }
+            }
+        }
+        .offset(y: -20)
+        .background(Color(.systemGray6))
     }
     
 }

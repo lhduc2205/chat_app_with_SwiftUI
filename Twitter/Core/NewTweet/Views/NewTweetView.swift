@@ -25,8 +25,6 @@ struct NewTweetView: View {
             tweetAttacher
         }
         .showLoadingDialog(with: "Uploading...", isLoading: $viewModel.isTweetUploading)
-        
-        
     }
 }
 
